@@ -1,32 +1,19 @@
-use crate::{sign, verify};
+use crate::{decrypt, encrypt, sign, verify};
 
-#[cfg(test)]
+const MESSAGE: &str = "TEST MESSAGE";
+
 #[test]
 fn test_encrypt_decrypt() {
-    let encrypted_result = encrypt(MESSAGE.trim().to_owned(), PUBLIC_KEY.trim().to_owned());
-    if encrypted_result.is_err() {
-        panic!("errored in encryption.");
-    }
-    let encrypted = encrypted_result.unwrap();
-
-    use crate::{decrypt, encrypt};
-
-    let decrypted_result = decrypt(encrypted.to_owned(), SECRET_KEY.to_owned());
-    if decrypted_result.is_err() {
-        panic!("errored in encryption.");
-    }
-    let decrypted = decrypted_result.unwrap();
+    let encrypted = encrypt(MESSAGE.trim().to_owned(), PUBLIC_KEY.trim().to_owned()).unwrap();
+    let decrypted = decrypt(encrypted.to_owned(), SECRET_KEY.to_owned()).unwrap();
     assert_eq!(decrypted.trim(), MESSAGE.to_owned().trim());
 }
 
 #[test]
 fn test_sign_verify() {
-    let signed_result = sign(MESSAGE.to_owned(), SECRET_KEY.to_owned());
-    let signed = signed_result.unwrap();
-
-    let verification_result = verify(signed.to_owned(), PUBLIC_KEY.to_owned());
-    let verification = verification_result.unwrap();
-    println!("{}", verification);
+    let signed = sign(MESSAGE.to_owned(), SECRET_KEY.to_owned()).unwrap();
+    let verification = verify(signed.to_owned(), PUBLIC_KEY.to_owned()).unwrap();
+    assert!(verification);
 }
 
 const PUBLIC_KEY: &str = "-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -153,5 +140,3 @@ dwjVM+4FbAbuwSbKsCGHBxkx9JFrspSdp91uapPW83pOyypYY49tfEWZ7DNH8ZHJ
 WA==
 =MEOj
 -----END PGP PRIVATE KEY BLOCK-----";
-
-const MESSAGE: &str = "TEST MESSAGE";
